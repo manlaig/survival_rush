@@ -39,8 +39,8 @@ GameObject:
   - component: {fileID: 33711404967787796}
   - component: {fileID: 23744180826607688}
   - component: {fileID: 135681803477380288}
-  - component: {fileID: 114986690394664842}
   - component: {fileID: 199140451101500436}
+  - component: {fileID: 114986690394664842}
   - component: {fileID: 198322921276672004}
   m_Layer: 0
   m_Name: Explosive

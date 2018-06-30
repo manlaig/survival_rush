@@ -40,4 +40,11 @@ public class EnemyAttack : MonoBehaviour
             Destroy(gameObject, 0.1f);
         }
     }
+
+    public void activateColliders()
+    {
+        Collider[] colliders = GetComponents<SphereCollider>();
+        foreach (Collider col in colliders)
+            col.enabled = true;
+    }
 }

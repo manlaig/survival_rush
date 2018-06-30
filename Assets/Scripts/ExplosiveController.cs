@@ -6,7 +6,6 @@ public class ExplosiveController : MonoBehaviour
 
     bool exploding = false;
     ParticleSystem explosion, explosionChild;
-    GameObject delBg;  // choose better name
 
 	void Start ()
     {
@@ -18,19 +17,18 @@ public class ExplosiveController : MonoBehaviour
     {
         if (!explosion.isPlaying && exploding)
         {
-            delBg = Instantiate(bg, transform.position, transform.rotation);
-            if(explosionChild.isPlaying)
-                explosionChild.Stop();
+            SpawnManager.weaponsActiveCount--;
+            GameObject delBg = Instantiate(bg, transform.position, transform.rotation);
+            Destroy(delBg, 5f);
+            Destroy(gameObject, 5f);
             explosion.Play();
             GetComponent<MeshRenderer>().enabled = false;
-            Destroy(gameObject, 5f);
-            Destroy(delBg, 5f);
         }
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.tag == "Player")
+        if (other.gameObject.tag == "Player")
             exploding = true;
     }
 }

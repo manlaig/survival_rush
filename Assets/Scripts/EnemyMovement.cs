@@ -5,21 +5,37 @@ public class EnemyMovement : MonoBehaviour
 {
     GameObject player;
     GameManager gameController;
-    NavMeshAgent agent;
+    float timeSpawned;
+    bool lerpingAlpha;
 
 	void Start ()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
-        agent = GetComponent<NavMeshAgent>();
+        timeSpawned = Time.time;
+        lerpingAlpha = true;
 	}
 	
 	void Update ()
     {
+        // fading in the enemy when its spawned
+        if(lerpingAlpha)
+        {
+            float progress = Time.time - timeSpawned;
+            if (progress >= 2f)
+                lerpingAlpha = false;
+            Color color = GetComponent<MeshRenderer>().material.color;
+            color.a = 0;
+            GetComponent<MeshRenderer>().material.color = Color.Lerp(color, new Color(0.91f, 0.376f, 0.27f, 1f), progress);
+        }
+
         if (player != null)
         {
-            if (player.activeInHierarchy && gameController.isGameStarted())
-                agent.SetDestination(player.transform.position);
+            if (player.activeInHierarchy && gameController.isGameStarted() && Time.time - timeSpawned >= 1f)
+            {
+                GetComponent<EnemyAttack>().activateColliders();
+                GetComponent<NavMeshAgent>().SetDestination(player.transform.position);
+            }
             if (!player.activeInHierarchy)
                 stopAgent();
         }
@@ -32,9 +48,6 @@ public class EnemyMovement : MonoBehaviour
 
     public void setSpeed(float speed)
     {
-        //if (agent == null) Debug.Log("The agent is null");
-        //agent.speed = speed;
-        //I want different speeds based on the difficulty level, but this line is causing an error
         GetComponent<NavMeshAgent>().speed = speed;
     }
 }
