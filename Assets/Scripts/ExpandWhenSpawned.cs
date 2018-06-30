@@ -13,7 +13,7 @@ public class ExpandWhenSpawned : MonoBehaviour
             Rigidbody rb = child.gameObject.GetComponent<Rigidbody>();
             if(rb != null)
                 rb.velocity = -child.right * speed;
-            Destroy(gameObject, 0.3f);
+            Destroy(gameObject, 0.7f);
         }
 	}
 }

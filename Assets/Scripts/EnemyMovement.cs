@@ -27,7 +27,7 @@ public class EnemyMovement : MonoBehaviour
 
     public void stopAgent()
     {
-        agent.isStopped = true;
+        GetComponent<NavMeshAgent>().isStopped = true;
     }
 
     public void setSpeed(float speed)

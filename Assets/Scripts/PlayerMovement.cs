@@ -93,6 +93,6 @@ public class PlayerMovement : MonoBehaviour
         else if (Mathf.Abs(x) >= 0.9f || Mathf.Abs(y) >= 0.9f)
             mult = 12f;
        
-        return mult;
+        return mult + 1f;
     }
 }

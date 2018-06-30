@@ -22,6 +22,7 @@ public class SpawnManager : MonoBehaviour
 
         timerSpawnCircle = 0f;
         spawning = false;
+        //spawnVerticalWall();
 	}
 
     void Update()

@@ -38,5 +38,5 @@ public class TimeElapsed : MonoBehaviour
             string mid = (seconds < 10) ? ":0" : ":";
             text.text = "Time: " + minutes + mid + seconds;
         }
-    }  
+    }
 }

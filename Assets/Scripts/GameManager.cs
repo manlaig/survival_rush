@@ -41,10 +41,10 @@ public class GameManager : MonoBehaviour
     void finishGame()
     {
         gameOverScreen.SetActive(true);
+        pauseButton.SetActive(false);
 
-        if(pauseButton != null)
-            pauseButton.SetActive(false);
-        
+        GameObject.Find("ScoreEarned").GetComponent<Text>().text = "Score: " + score;
+       
         if(!spawnedDeathEffect)
         {
             spawnedDeathEffect = true;
