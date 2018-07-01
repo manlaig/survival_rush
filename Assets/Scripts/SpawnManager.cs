@@ -27,7 +27,7 @@ public class SpawnManager : MonoBehaviour
         weaponsActiveCount = 0;
         timerSpawnCircle = 0f;
         spawning = false;
-        spawnVerticalWall();
+        //spawnVerticalWall();
         //instantSpawnEnemies(10);
 	}
 
@@ -65,7 +65,7 @@ public class SpawnManager : MonoBehaviour
             expandSpawnDelay = 5f;
         }
         InvokeRepeating("spawnEnemy", 1.0f, enemySpawnDelay);
-        InvokeRepeating("spawnExplosive", 3.0f, explosiveSpawnDelay);
+        InvokeRepeating("spawnExplosive", 5.0f, explosiveSpawnDelay);
         InvokeRepeating("spawnExpandWeapon", 2.0f, expandSpawnDelay);
     }
 
@@ -98,7 +98,7 @@ public class SpawnManager : MonoBehaviour
 
     void spawnExplosive()
     {
-        if (weaponsActiveCount < 3)
+        if (weaponsActiveCount < 2)
         {
             weaponsActiveCount++;
             Vector3 pos = GetRandomLocation();
@@ -109,7 +109,7 @@ public class SpawnManager : MonoBehaviour
 
     void spawnExpandWeapon()
     {
-        if (weaponsActiveCount < 3)
+        if (weaponsActiveCount < 2)
         {
             weaponsActiveCount++;
             Vector3 pos = GetRandomLocation();

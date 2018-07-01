@@ -22,7 +22,8 @@ public class ExplosiveController : MonoBehaviour
             Destroy(delBg, 5f);
             Destroy(gameObject, 5f);
             explosion.Play();
-            GetComponent<MeshRenderer>().enabled = false;
+
+            DisableAllColliders();
         }
     }
 
@@ -30,5 +31,13 @@ public class ExplosiveController : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
             exploding = true;
+    }
+
+    void DisableAllColliders()
+    {
+        GetComponent<MeshRenderer>().enabled = false;
+        MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer ren in renderers)
+            ren.enabled = false;
     }
 }

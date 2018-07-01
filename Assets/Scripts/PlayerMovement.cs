@@ -2,7 +2,7 @@
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] float smoothnessRotate = 15f; /*speed = 1f, lerpSpeed = 20f;*/
+    [SerializeField] float smoothnessRotate = 15f;
 
     GameManager gameController;
 	WallColliderPosition walls;
