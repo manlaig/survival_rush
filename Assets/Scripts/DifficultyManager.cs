@@ -8,7 +8,7 @@ public enum Difficulty
 
 public class DifficultyManager : MonoBehaviour
 {
-    int difficulty;
+    public static int difficulty;
     Button[] difficultyButtons;
 
     void Start()
@@ -24,13 +24,10 @@ public class DifficultyManager : MonoBehaviour
         toggleSelected(false);
     }
 
-    public int GetDifficulty()
-    {
-        return difficulty;
-    }
-
     void toggleSelected(bool state)
     {
-        difficultyButtons[difficulty].interactable = state;
+        Button temp = difficultyButtons[difficulty];
+        if(temp != null)
+            temp.interactable = state;
     }
 }

@@ -8,7 +8,7 @@ public class ExpandWeaponController : MonoBehaviour
     void Start()
     {
         spawned = false;
-        GetComponent<Rigidbody>().velocity = new Vector3(Random.Range(0f, 5f), 0f, Random.Range(0f, 5f));
+        GetComponent<Rigidbody>().velocity = new Vector3(Random.Range(-6f, 6f), 0f, Random.Range(-6f, 6f));
     }
 
     void OnTriggerEnter(Collider other)
@@ -16,6 +16,7 @@ public class ExpandWeaponController : MonoBehaviour
         if(other.gameObject.tag == "Player" && !spawned)
         {
             spawned = true;
+            GameManager.score += 10;
             SpawnManager.weaponsActiveCount--;
             Instantiate(expandObject, transform.position, Quaternion.Euler(Vector3.zero));
             Destroy(gameObject);

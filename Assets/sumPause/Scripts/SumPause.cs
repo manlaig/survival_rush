@@ -27,7 +27,7 @@ public class SumPause : MonoBehaviour {
         get { return status; }
         set {
             status = value;
-            Debug.Log("Pause status set to " + status.ToString());
+            //Debug.Log("Pause status set to " + status.ToString());
 
             OnChange();
 

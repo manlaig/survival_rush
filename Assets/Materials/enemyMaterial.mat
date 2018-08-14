@@ -4,7 +4,7 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: enemyMaterial
   m_Shader: {fileID: 4800000, guid: b7eb90c4fea16d34ab4d7caa19b870a3, type: 3}
@@ -94,7 +94,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseScale: {r: 1, g: 1, b: 1, a: 0}
-    - _Color: {r: 0.91764706, g: 0.3764706, b: 0.27058825, a: 1}
+    - _Color: {r: 0.96862745, g: 0.47843137, b: 0.32156864, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _TintColor: {r: 0.91764706, g: 0.3764706, b: 0.27058825, a: 0}

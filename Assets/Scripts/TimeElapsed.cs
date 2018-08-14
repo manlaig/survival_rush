@@ -1,21 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
+using TMPro;
 
-/// <summary>
-/// Changes the time elapsed text as the game plays
-/// </summary>
 public class TimeElapsed : MonoBehaviour
 {
-    Text text;
+    public TextMeshProUGUI score;
+    TextMeshProUGUI timeText;
     GameManager gameController;
-    int timeElapsed = 0;
-    bool timeSet = false;
+    public static int initialTime;
+    bool timeSet;
 
     void Start ()
     {
-        text = GetComponent<Text>();
+        initialTime = 0;
+        timeSet = false;
+        timeText = GetComponent<TextMeshProUGUI>();
         gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
 	}
 	
@@ -23,20 +21,58 @@ public class TimeElapsed : MonoBehaviour
     {
         if (gameController.isGameStarted() && !timeSet)
         {
-            timeElapsed = (int)Time.time;
             timeSet = true;
+            initialTime = (int) Time.time;
+            SetRepeatingCalls();
         }
+        if (gameController.isGameOver())
+        {
+            DisableTexts();
+            CancelInvoke("DecreaseSpawnDelay");
+            CancelInvoke("IncreaseWeaponAllowed");
+        }
+
+        if(score.gameObject.activeInHierarchy)
+            score.text = "Score: " + GameManager.score;
         UpdateTime();
 	}
 
+    void SetRepeatingCalls()
+    {
+        int[] decreaseDelays = { 15, 13, 11 };
+        int[] increaseDelays = { 70, 50, 30 };
+        // there was a performance issue involved when the second parameter of invokerepeating is 0f, look into it later
+        InvokeRepeating("DecreaseSpawnDelay", 0f, decreaseDelays[DifficultyManager.difficulty]);
+        InvokeRepeating("IncreaseWeaponAllowed", 30f, increaseDelays[DifficultyManager.difficulty]);
+    }
+
+    void DisableTexts()
+    {
+        timeText.gameObject.SetActive(false);
+        score.gameObject.SetActive(false);
+    }
+
     void UpdateTime()
     {
-        if (timeSet && !gameController.isGameOver())
-        {
-            int minutes = (int)((Time.time - timeElapsed) / 60);
-            int seconds = (int)((Time.time - timeElapsed) % 60);
-            string mid = (seconds < 10) ? ":0" : ":";
-            text.text = "Time: " + minutes + mid + seconds;
-        }
+        if (timeSet && !gameController.isGameOver() && timeText.gameObject.activeInHierarchy)
+            timeText.text = "Time: " + GetTimeString();
+    }
+
+    public static string GetTimeString()
+    {
+        int minutes = (int)(Time.time - initialTime) / 60;
+        int seconds = (int)(Time.time - initialTime) % 60;
+        string mid = (seconds < 10) ? ":0" : ":";
+        return minutes.ToString() + mid + seconds.ToString();
+    }
+
+    void DecreaseSpawnDelay()
+    {
+        gameController.gameObject.GetComponent<SpawnManager>().DecreaseSpawnDelay();
+    }
+
+    void IncreaseWeaponAllowed()
+    {
+        gameController.gameObject.GetComponent<SpawnManager>().IncreaseWeaponsAllowed();
     }
 }

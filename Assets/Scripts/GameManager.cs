@@ -1,73 +1,97 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using TMPro;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// refactor this code, its a very messy code
 public class GameManager : MonoBehaviour
 {
     [SerializeField] GameObject gameOverScreen, deathEffectPlayer, pauseButton;
-    [SerializeField] Text scoreText;
+    [SerializeField] GameObject askDevicePosition, howToPlayScreen;
+    [SerializeField] Material playerMaterial, enemyMaterial;
 
-    public static int score;
+    public static int score, gamesPlayed = 0;
 
-    bool gameOver, gameStarted, spawnedDeathEffect;
-
+    bool gameOver, gameStarted;
     GameObject player;
-    SpawnManager spawnManager;
+    SpawnManager spawner;
 
 	void Start ()
 	{
-        gameOver = gameStarted = spawnedDeathEffect = false;
+        gameOver = gameStarted = false;
         score = 0;
 
-        Screen.sleepTimeout = SleepTimeout.NeverSleep;  // stop the screen from turning off while playing
         player = GameObject.FindGameObjectWithTag("Player");
-        spawnManager = GetComponent<SpawnManager>();
-
-        //player.SetActive(false); error is caused because of this line in the spawnmanager class
+        spawner = GetComponent<SpawnManager>();
 	}
-
-	void Update ()
-    {
-        scoreText.text = "Score: " + score;
-
-        if (Input.touchCount > 0)
-            pauseButton.GetComponent<SumPause>().TogglePause();
-
-        if (gameOver)
-            finishGame();
-	}
-
-    void finishGame()
-    {
-        gameOverScreen.SetActive(true);
-        pauseButton.SetActive(false);
-
-        GameObject.Find("ScoreEarned").GetComponent<Text>().text = "Score: " + score;
-       
-        if(!spawnedDeathEffect)
-        {
-            spawnedDeathEffect = true;
-            Instantiate(deathEffectPlayer, player.transform.position, player.transform.rotation);
-        }
-        player.SetActive(false);
-    }
 
     public void StartGame()
     {
-        gameStarted = true;
-        if(!player.activeInHierarchy)
-            player.SetActive(true);
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;  // stop the screen from turning off while playing
+
+        if (PlayerPrefs.GetInt("IsFirstTime", 1) == 1)
+            FirstTimePlayingInitialize();
+        else
+        {
+            gameStarted = true;
+            if (!player.activeInHierarchy)
+                player.SetActive(true);
+            spawner.StartSpawning();
+            ChangeColors();
+        }
+    }
+
+    void FirstTimePlayingInitialize()
+    {
+        DifficultyManager.difficulty = (int) Difficulty.EASY;
+        PlayerPrefs.SetInt("IsFirstTime", 0);
+        howToPlayScreen.SetActive(true);
+        askDevicePosition.SetActive(true);
+    }
+
+    void ChangeColors()
+    {
+        SetBackground();
+        SetPlayerColor();
+        SetEnemyColor();
+    }
+
+    void SetBackground()
+    {
+        Color[] floorColors = { new Color(56f / 255f, 64f / 255f, 89f / 255f), new Color(51f / 255f, 37f / 255f, 50f / 255f), new Color(35f / 255f, 35f / 255f, 35f / 255f) };
+        Material floor = GameObject.Find("Floor").GetComponent<Renderer>().material;
+        floor.color = floorColors[DifficultyManager.difficulty];
+    }
+
+    void SetPlayerColor()
+    {
+        Color[] playerColors = { new Color(241f / 255f, 222f / 255f, 152f / 255f), new Color(164f / 255f, 154f / 255f, 135f / 255f), new Color(148f / 255f, 90f / 255f, 76f / 255f) };
+        playerMaterial.color = playerColors[DifficultyManager.difficulty];
+    }
+
+    void SetEnemyColor()
+    {
+        Color[] enemyColors = { new Color(247f / 255f, 122f / 255f, 82f / 255f), new Color(64f / 255f, 102f / 255f, 98f / 255f), new Color(145f / 255f, 105f / 255f, 91f / 255f) };
+        enemyMaterial.color = enemyColors[DifficultyManager.difficulty];
     }
 
     public void RetryGame()
     {
+        if (++gamesPlayed >= 3)
+        {
+            gamesPlayed = 0;
+            GameObject.Find("Ad Controller").GetComponent<AdManager>().ShowAd();
+        }
         SceneManager.LoadScene("main");
     }
 
     public void setGameOver()
     {
-        gameOver = true;
+        if (!gameOver)
+        {
+            gameOver = true;
+            spawner.StopSpawning();
+            finishGame();
+        }
     }
 
     public bool isGameStarted()
@@ -78,5 +102,41 @@ public class GameManager : MonoBehaviour
     public bool isGameOver()
     {
         return gameOver;
+    }
+
+    void finishGame()
+    {
+        Screen.sleepTimeout = SleepTimeout.SystemSetting;
+
+        Instantiate(deathEffectPlayer, player.transform.position, player.transform.rotation);
+
+        player.SetActive(false);
+        pauseButton.SetActive(false);
+        StartCoroutine(ActivateGameOverScreen());
+    }
+
+    void updateHighScore()
+    {
+        string[] highScoreArray = { "EasyHighScore", "MediumHighScore", "HardHighScore" };
+
+        if (score > PlayerPrefs.GetInt(highScoreArray[DifficultyManager.difficulty], 0))
+            PlayerPrefs.SetInt(highScoreArray[DifficultyManager.difficulty], score);
+        
+        GameObject.Find("HighScore").GetComponent<TextMeshProUGUI>().text = "Best: "
+            + PlayerPrefs.GetInt(highScoreArray[DifficultyManager.difficulty], 0);
+    }
+
+    IEnumerator ActivateGameOverScreen()
+    {
+        yield return new WaitForSeconds(1f);
+        gameOverScreen.SetActive(true);
+        updateHighScore();
+        DisplayUserPerformance();
+    }
+
+    void DisplayUserPerformance()
+    {
+        GameObject.Find("ScoreEarned").GetComponent<TextMeshProUGUI>().text = score.ToString();
+        GameObject.Find("TimeSurvived").GetComponent<TextMeshProUGUI>().text = TimeElapsed.GetTimeString();
     }
 }

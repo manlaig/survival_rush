@@ -5,35 +5,31 @@ public class ExplosiveController : MonoBehaviour
     public GameObject bg;
 
     bool exploding = false;
-    ParticleSystem explosion, explosionChild;
+    ParticleSystem explosion;
 
 	void Start ()
     {
         explosion = GetComponent<ParticleSystem>();
-        explosionChild = GetComponentInChildren<ParticleSystem>();
+        GetComponent<Rigidbody>().angularVelocity = new Vector3(0f, (Random.Range(0, 2) == 0) ? 1f : -1f, 0f);
 	}
 
-    void Update()
+    void OnTriggerEnter(Collider other)
     {
-        if (!explosion.isPlaying && exploding)
+        if (other.gameObject.tag == "Player" && !exploding && !explosion.isPlaying)
         {
+            exploding = true;
+            GameManager.score += 10;
             SpawnManager.weaponsActiveCount--;
             GameObject delBg = Instantiate(bg, transform.position, transform.rotation);
             Destroy(delBg, 5f);
             Destroy(gameObject, 5f);
             explosion.Play();
 
-            DisableAllColliders();
+            DisableAllRenderers();
         }
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "Player")
-            exploding = true;
-    }
-
-    void DisableAllColliders()
+    void DisableAllRenderers()
     {
         GetComponent<MeshRenderer>().enabled = false;
         MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();

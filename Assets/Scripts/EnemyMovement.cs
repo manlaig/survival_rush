@@ -4,17 +4,18 @@ using UnityEngine.AI;
 public class EnemyMovement : MonoBehaviour
 {
     GameObject player;
-    GameManager gameController;
+    NavMeshAgent agent;
     float timeSpawned;
-    bool lerpingAlpha;
+    bool lerpingAlpha, initialization;
 
 	void Start ()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+        agent = GetComponent<NavMeshAgent>();
         timeSpawned = Time.time;
         lerpingAlpha = true;
-	}
+        initialization = false;
+    }
 	
 	void Update ()
     {
@@ -22,32 +23,48 @@ public class EnemyMovement : MonoBehaviour
         if(lerpingAlpha)
         {
             float progress = Time.time - timeSpawned;
-            if (progress >= 2f)
+            if (progress >= 1f)
+            {
                 lerpingAlpha = false;
+                initialization = true;
+                GetComponent<EnemyAttack>().activateColliders();
+            }
             Color color = GetComponent<MeshRenderer>().material.color;
             color.a = 0;
-            GetComponent<MeshRenderer>().material.color = Color.Lerp(color, new Color(0.91f, 0.376f, 0.27f, 1f), progress);
+            GetComponent<MeshRenderer>().material.color = Color.Lerp(color, new Color(color.r, color.g, color.b, 1f), progress);
         }
 
         if (player != null)
         {
-            if (player.activeInHierarchy && gameController.isGameStarted() && Time.time - timeSpawned >= 1f)
-            {
-                GetComponent<EnemyAttack>().activateColliders();
-                GetComponent<NavMeshAgent>().SetDestination(player.transform.position);
-            }
+            if (ShieldWeaponController.shieldActive)
+                runAwayFromPlayer();
+            else if(initialization)
+                agent.SetDestination(player.transform.position);
+
             if (!player.activeInHierarchy)
                 stopAgent();
         }
 	}
 
+    void runAwayFromPlayer()
+    {
+        float dist = Vector3.Distance(transform.position, player.transform.position);
+        if (dist < 7f)
+        {
+            Vector3 pos = transform.position - player.transform.position;
+            agent.SetDestination(transform.position + pos);
+        }
+    }
+
     public void stopAgent()
     {
-        GetComponent<NavMeshAgent>().isStopped = true;
+        if(GetComponent<NavMeshAgent>() != null)
+            GetComponent<NavMeshAgent>().isStopped = true;
     }
 
     public void setSpeed(float speed)
     {
-        GetComponent<NavMeshAgent>().speed = speed;
+        if(GetComponent<NavMeshAgent>() != null)
+            GetComponent<NavMeshAgent>().speed = speed;
     }
 }
