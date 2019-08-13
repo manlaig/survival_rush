@@ -76,11 +76,6 @@ public class GameManager : MonoBehaviour
 
     public void RetryGame()
     {
-        if (++gamesPlayed >= 3)
-        {
-            gamesPlayed = 0;
-            GameObject.Find("Ad Controller").GetComponent<AdManager>().ShowAd();
-        }
         SceneManager.LoadScene("main");
     }
 
